@@ -45,6 +45,11 @@ For English multi-speaker TTS, run
 python3 synthesize.py --text "YOUR_DESIRED_TEXT"  --speaker_id SPEAKER_ID --restore_step 800000 --mode single -p config/LibriTTS/preprocess.yaml -m config/LibriTTS/model.yaml -t config/LibriTTS/train.yaml
 ```
 
+For my previous TTS, run
+```
+python3 synthesize.py --text "YOUR_DESIRED_TEXT" --restore_step "step_number" --mode single -p config/mytts/preprocess.yaml -m config/mytts/model.yaml -t config/mytts/train.yaml
+```
+
 The generated utterances will be put in ``output/result/``.
 
 Here is an example of synthesized mel-spectrogram of the sentence "Printing, in the only sense with which we are at present concerned, differs from most if not from all the arts and crafts represented in the Exhibition", with the English single-speaker TTS model.  
@@ -78,34 +83,22 @@ The supported datasets are
 
 We take LJSpeech as an example hereafter.
 
+For mytts dataset, there is wav voice datas in mytts_wav directory and transcript .xlsx file mytts_script.
+
 ## Preprocessing
  
 First, run 
 ```
-python3 prepare_align.py config/LJSpeech/preprocess.yaml
+python3 prepare_align.py config/mytts/preprocess.yaml
 ```
 for some preparations.
 
 As described in the paper, [Montreal Forced Aligner](https://montreal-forced-aligner.readthedocs.io/en/latest/) (MFA) is used to obtain the alignments between the utterances and the phoneme sequences.
 Alignments of the supported datasets are provided [here](https://drive.google.com/drive/folders/1DBRkALpPd6FL9gjHMmMEdHODmkgNIIK4?usp=sharing).
-You have to unzip the files in ``preprocessed_data/LJSpeech/TextGrid/``.
+For mytts, follow (MFA) tutorial and make TextGrid files.
+You have to unzip the files in ``preprocessed_data/mytts/TextGrid/``.
 
 After that, run the preprocessing script by
-```
-python3 preprocess.py config/LJSpeech/preprocess.yaml
-```
-
-Alternately, you can align the corpus by yourself. 
-Download the official MFA package and run
-```
-./montreal-forced-aligner/bin/mfa_align raw_data/LJSpeech/ lexicon/librispeech-lexicon.txt english preprocessed_data/LJSpeech
-```
-or
-```
-./montreal-forced-aligner/bin/mfa_train_and_align raw_data/LJSpeech/ lexicon/librispeech-lexicon.txt preprocessed_data/LJSpeech
-```
-
-to align the corpus and then run the preprocessing script.
 ```
 python3 preprocess.py config/LJSpeech/preprocess.yaml
 ```
@@ -114,7 +107,7 @@ python3 preprocess.py config/LJSpeech/preprocess.yaml
 
 Train your model with
 ```
-python3 train.py -p config/LJSpeech/preprocess.yaml -m config/LJSpeech/model.yaml -t config/LJSpeech/train.yaml
+python3 train.py -p config/mytts/preprocess.yaml -m config/mytts/model.yaml -t config/mytts/train.yaml
 ```
 
 The model takes less than 10k steps (less than 1 hour on my GTX1080Ti GPU) of training to generate audio samples with acceptable quality, which is much more efficient than the autoregressive models such as Tacotron2.
@@ -142,6 +135,7 @@ The loss curves, synthesized mel-spectrograms, and audios are shown.
 Please inform me if you find any mistakes in this repo, or any useful tips to train the FastSpeech 2 model.
 
 # References
+- [Original FastSpeech 2 Repository](https://github.com/ming024/FastSpeech2)
 - [FastSpeech 2: Fast and High-Quality End-to-End Text to Speech](https://arxiv.org/abs/2006.04558), Y. Ren, *et al*.
 - [xcmyz's FastSpeech implementation](https://github.com/xcmyz/FastSpeech)
 - [TensorSpeech's FastSpeech 2 implementation](https://github.com/TensorSpeech/TensorflowTTS)
